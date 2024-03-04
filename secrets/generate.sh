@@ -1,5 +1,7 @@
 #!/bin/bash
 
+password_length=16
+
 load_file_list() {
     # Define the filename
     filenames="_file-list.txt"
@@ -27,7 +29,7 @@ load_file_list() {
 # Function to generate a random password
 generate_password() {
     # Generate a random 16-character password
-    password=$(openssl rand -base64 12 | tr -dc 'a-zA-Z0-9' | head -c 16)
+    password=$(openssl rand -base64 $password_length | tr -dc 'a-zA-Z0-9' | head -c $password_length)
     echo "$password"
 }
 
