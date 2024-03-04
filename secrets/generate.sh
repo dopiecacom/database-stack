@@ -29,7 +29,7 @@ load_file_list() {
 # Function to generate a random password
 generate_password() {
     # Generate a random 16-character password
-    password=$(openssl rand -base64 $password_length | tr -dc 'a-zA-Z0-9' | head -c $password_length)
+    password=$(openssl rand -base64 $(($password_length + 24)) | tr -dc 'a-zA-Z0-9' | head -c $password_length)
     echo "$password"
 }
 
