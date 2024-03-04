@@ -116,6 +116,8 @@ secrets:
     file: ./secrets/mysql_8.1_root_password
   mysql_8.0_root_password:
     file: ./secrets/mysql_8.0_root_password
+  mysql_5.7_root_password:
+    file: ./secrets/mysql_5.7_root_password
   mariadb_10.11_root_password:
     file: ./secrets/mariadb_10.11_root_password
   mariadb_11.3_root_password:
