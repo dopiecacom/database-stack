@@ -1,0 +1,4 @@
+.idea
+/secrets/*
+!/secrets/_file-list.txt
+!/secrets/generate.sh
