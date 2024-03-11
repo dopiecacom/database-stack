@@ -97,6 +97,16 @@ services:
     volumes:
       - mariadb_11.3:/var/lib/mysql
 
+  redis: 
+    container_name: redis
+    image: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning
+    volumes: 
+      - redis:/data
+
 
 volumes:
   mysql_8.0:
@@ -106,6 +116,7 @@ volumes:
   mysql_5.7:
   mariadb_10.11:
   mariadb_11.3:
+  redis:
 
 secrets:
   mysql_8.3_root_password:
