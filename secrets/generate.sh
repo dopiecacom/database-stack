@@ -60,13 +60,7 @@ generate_files() {
   done
 }
 
-generate_keys() {
- file="remote_repo_deploy_key"
- file_path=$output_directory$file
- ssh-keygen -t rsa -N "" -f $file_path
-}
 
 load_file_list
 create_output_directory
 generate_files
-generate_keys
