@@ -1,62 +1,72 @@
 #!/bin/bash
 
+filenames="_file-list.txt"
 password_length=16
+output_directory="output/"
 
 load_file_list() {
-    # Define the filename
-    filenames="_file-list.txt"
 
-    # Check if the file exists
     if [ ! -f "$filenames" ]; then
-        echo "File $filename not found."
+        echo "File $filenames not found."
         exit 1
     fi
 
-    # Initialize an empty array
     file_list=()
 
-    # Read the file line by line and populate the array
-    while IFS= read -r file; do
-        # Add each line (record) to the array
-        file_list+=( $(echo "$file" | sed 's/\r$//') )
-    done < "$filenames"
-
-    # Return the array elements
-    #echo $file_list
-    #echo "${file_list[@]}"
+    mapfile -t file_list < "$filenames"
 }
 
-# Function to generate a random password
+
 generate_password() {
-    # Generate a random 16-character password
-    password=$(openssl rand -base64 $(($password_length + 24)) | tr -dc 'a-zA-Z0-9' | head -c $password_length)
+
+    password=$(openssl rand -base64 $((password_length + 24)) | tr -dc 'a-zA-Z0-9' | head -c $password_length)
+
     echo "$password"
 }
 
-# List of files to check
-#file_list=("file1.txt" "file2.txt" "file3.txt")
+create_output_directory() {
+
+  mkdir -p $output_directory
+}
+
+
+
+generate_files() {
+
+  for file in "${file_list[@]}"; do
+
+    file=$( tr -d '\n\t\r ' <<<"$file" )
+    file_path=$output_directory$file
+
+      if [ -e "$file_path" ] && [  -s "$file_path" ]; then
+          echo "File $file_path exists and its not empty"
+          read -p "WARNING!!! Do you want to generate a password for: $file_path? (yes/no): " response
+
+          case "$response" in
+              [Yy][Ee][Ss]|[Yy])
+                  password=$(generate_password)
+                  echo -n $password > "$file_path"
+                  echo -e "New password generated for: './$file_path'\n"
+                  ;;
+              *)
+                  echo -e "Skipping './$file_path'\n"
+                  ;;
+          esac
+      else
+          password=$(generate_password)
+          echo -n "$password" > "$file_path"
+          echo -e "File created and new password generated for: './$file_path'\n"
+      fi
+  done
+}
+
+generate_keys() {
+ file="remote_repo_deploy_key"
+ file_path=$output_directory$file
+ ssh-keygen -t rsa -N "" -f $file_path
+}
+
 load_file_list
-
-# Check if each file exists
-for file in "${file_list[@]}"; do
-    if [ -e "$file" ] && [  -s "$file" ]; then
-        echo "File $file exists and its not empty"
-        read -p "WARNING!!! Do you want to generate a password for: $file? (yes/no): " response
-
-        case "$response" in
-            [Yy][Ee][Ss]|[Yy])
-                password=$(generate_password)
-                echo -n $password > $file
-                echo -e "New password generated for: './$file'\n"
-                ;;
-            *)
-                echo -e "Skipping './$file'\n"
-                ;;
-        esac
-    else
-        password=$(generate_password)
-        echo -n $password > $file
-        echo -e "File created and new password generated for: './$file'\n"
-    fi
-done
-
+create_output_directory
+generate_files
+generate_keys
